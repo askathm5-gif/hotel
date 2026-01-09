@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sri Lankan Spice Restaurant</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <header class="top-bar">
+    <div class="brand">
+      <span class="logo-circle">SS</span>
+      <div>
+        <h1>Sri Lankan Spice Restaurant</h1>
+        <p class="tagline"> Taste of  Sri Lankan</p>
+      </div>
+    </div>
+    <nav class="nav-links">
+      <a href="#menu-section">Menu</a>
+      <a href="#billing-section">Billing</a>
+      <a href="#report-section">Sales Report</a>
+      <a href="#manage-section">Manage Menu</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- MENU + CART / BILLING LAYOUT -->
+    <section id="menu-section" class="section-grid">
+      <div class="menu-panel card">
+        <div class="section-header">
+          <h2>Menu</h2>
+          <p>Select an item to add to the bill</p>
+        </div>
+        <div id="menu-list" class="menu-list">
+          <!-- Menu items rendered by JS -->
+        </div>
+      </div>
+
+      <section id="billing-section" class="billing-panel card">
+        <div class="section-header">
+          <h2>Billing</h2>
+          <p>Click an item in the cart to remove it</p>
+        </div>
+
+        <div class="cart-table-wrapper">
+          <table class="cart-table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="cart-body">
+              <!-- Cart rows -->
+            </tbody>
+          </table>
+          <p id="empty-cart-msg" class="muted">No items yet. Click on menu items to add.</p>
+        </div>
+
+        <div class="bill-summary">
+          <div class="summary-row">
+            <span>Sub Total</span>
+            <span id="subtotal-amount">LKR0.00</span>
+          </div>
+          <div class="summary-row">
+            <span>Tax (0%)</span>
+            <span id="tax-amount">LKR0.00</span>
+          </div>
+          <div class="summary-row total-row">
+            <span>Grand Total</span>
+            <span id="total-amount">LKR0.00</span>
+          </div>
+        </div>
+
+        <div class="billing-actions">
+          <button id="clear-cart-btn" class="btn secondary">Clear Cart</button>
+          <button id="print-bill-btn" class="btn ghost">Print Bill</button>
+          <button id="pay-now-btn" class="btn primary">Pay Now (QR)</button>
+        </div>
+      </section>
+    </section>
+
+    <!-- QR / PAYMENT MODAL -->
+    <div id="payment-modal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content card">
+        <div class="modal-header">
+          <h3>Scan to Pay</h3>
+          <button id="close-payment-btn" class="icon-btn" aria-label="Close payment dialog">&times;</button>
+        </div>
+        <p class="muted">
+          Scan the QR code below with any UPI app to pay the amount.
+        </p>
+        <div class="qr-wrapper">
+          <!-- Placeholder QR image (you can replace qr.png with your real QR image) -->
+          <div class="fake-qr">
+            <div class="qr-inner"></div>
+          </div>
+          <p id="pay-amount-label" class="pay-amount-label">Amount: LKR0.00</p>
+        </div>
+        <button id="mark-paid-btn" class="btn primary wide">Mark as Paid & Save Sale</button>
+      </div>
+    </div>
+
+    <!-- MANAGE MENU (CRUD) -->
+    <section id="manage-section" class="card manage-section">
+      <div class="section-header">
+        <h2>Manage Menu</h2>
+        <p>Add, edit, or delete menu items. Changes are saved in this browser.</p>
+      </div>
+
+      <form id="menu-form" class="menu-form">
+        <input type="hidden" id="item-id" />
+
+        <div class="form-row">
+          <div class="field">
+            <label for="item-name">Item Name</label>
+            <input type="text" id="item-name" required placeholder="Eg. Masala Dosa" />
+          </div>
+          <div class="field">
+            <label for="item-price">Price (LKR)</label>
+            <input type="number" id="item-price" required min="1" step="1" placeholder="Eg. 600" />
+          </div>
+          <div class="field">
+            <label for="item-image">Image URL (optional)</label>
+            <input type="url" id="item-image" placeholder="https://tse3.mm.bing.net/th/id/OIP._pGUz4HYJs_WOQdlDvg8GQHaHa?pid=Api&P=0&h=220" />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn primary" id="save-item-btn">Save Item</button>
+          <button type="button" class="btn secondary" id="reset-form-btn">Reset</button>
+        </div>
+      </form>
+
+      <table class="manage-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Image</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="manage-body">
+          <!-- Manage menu rows -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- SALES / REPORT -->
+    <section id="report-section" class="card report-section">
+      <div class="section-header">
+        <h2>Monthly Sales Report</h2>
+        <p>Sales are stored locally in your browser after each successful payment.</p>
+      </div>
+
+      <div class="report-filters">
+        <div class="field">
+          <label for="report-month">Month</label>
+          <select id="report-month"></select>
+        </div>
+        <div class="field">
+          <label for="report-year">Year</label>
+          <select id="report-year"></select>
+        </div>
+        <button id="load-report-btn" class="btn secondary">Load Report</button>
+      </div>
+
+      <div class="report-summary">
+        <div class="summary-row">
+          <span>Total Orders</span>
+          <span id="report-orders">0</span>
+        </div>
+        <div class="summary-row">
+          <span>Total Sales</span>
+          <span id="report-sales">LKR0.00</span>
+        </div>
+      </div>
+
+      <div class="report-table-wrapper">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Date &amp; Time</th>
+              <th>Items</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody id="report-body">
+            <!-- Sales rows -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Hidden bill print area -->
+  <iframe id="print-frame" class="hidden"></iframe>
+
+  <footer class="footer">
+    <p>&copy; <span id="year-span"></span> Sri Lankan Spice Restaurant. Built with HTML, CSS &amp; JavaScript.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
